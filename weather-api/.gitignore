@@ -22,5 +22,4 @@ vendor/
 .idea/
 
 # Environment variables
-.env
-.env.*
+internal/config/.env
