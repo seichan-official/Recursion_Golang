@@ -1,0 +1,22 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Build directories
+bin/
+build/
+
+# OS-specific
+.DS_Store
+
+# Dependencies
+vendor/
+
+# IDE / Editor settings
+.vscode/
+.idea/
