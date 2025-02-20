@@ -33,10 +33,10 @@ func (r *WeatherRepository) FetchWeatherAlerts(lat, lon string) ([]models.Weathe
         return nil, fmt.Errorf("レスポンスの読み取りに失敗しました: %v", err)
     }
 
-    var weatherResponse models.WeatherResponse
-    if err := json.Unmarshal(body, &weatherResponse); err != nil {
+    var weatherAlertResponse models.WeatherAlertResponse
+    if err := json.Unmarshal(body, &weatherAlertResponse); err != nil {
         return nil, fmt.Errorf("JSONの解析に失敗しました: %v", err)
     }
 
-    return weatherResponse.Alerts, nil
+    return weatherAlertResponse.Alerts, nil
 }
