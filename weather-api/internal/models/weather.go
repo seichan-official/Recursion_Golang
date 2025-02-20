@@ -8,6 +8,6 @@ type WeatherAlert struct {
     Description string `json:"description"`
 }
 
-type WeatherResponse struct {
+type WeatherAlertResponse struct {
     Alerts []WeatherAlert `json:"alerts"`
 }
