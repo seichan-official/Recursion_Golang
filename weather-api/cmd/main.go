@@ -1,35 +1,12 @@
 package main
 
 import (
-    "fmt"
-    "net/http"
-    "strings"
+	"fmt"
+	"net/http"
 
-    "weather-api/internal/config"
-    "weather-api/internal/repositories"
-    "weather-api/internal/routes"
-
-    "github.com/gin-gonic/gin"
+	"weather-api/internal/config"
+	"weather-api/internal/routes"
 )
-
-// 天気情報を取得するエンドポイント
-func getWeatherHandler(c *gin.Context) {
-    citiesParam := c.Query("cities")
-    if citiesParam == "" {  
-        c.JSON(http.StatusBadRequest, gin.H{"error": "cities parameter is required"}) 
-        return
-    }
-
-    cities := strings.Split(citiesParam, ",")
-
-    weatherData, err := repositories.FetchWeatherMultiple(cities)
-    if err != nil {
-        c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-        return
-    }
-
-    c.JSON(http.StatusOK, weatherData)
-}
 
 func main() {
     config.LoadEnv()

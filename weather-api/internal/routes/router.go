@@ -16,5 +16,9 @@ func SetupRouter(mux *http.ServeMux) {
 		w.Write([]byte("Hello World"))
 	})
 	mux.HandleFunc("/geocode", geocodeController.GetCoordinates)
+
 	mux.HandleFunc("/weather-alerts", weatherController.GetWeatherAlerts)
+
+	mux.HandleFunc("/weather", getWeatherController.GetWeatherInfo)
+
 }
