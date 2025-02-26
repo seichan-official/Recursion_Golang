@@ -39,10 +39,15 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 			log.Printf("天気情報の取得に失敗しました（%s）: %v", city, err)
 			continue
 		}
-		defer resp.Body.Close()
+
+		defer func() {
+			if err := resp.Body.Close(); err != nil {
+				log.Printf("レスポンスボディを閉じる際にエラーが発生しました（%s）: %v", city, err)
+			}
+		}()
 
 		if resp.StatusCode != http.StatusOK {
-			log.Printf("天気APIのレスポンスが正常ではありません（%s）: ステータスコード %d", city, resp.StatusCode)
+			log.Printf("天気APIのレスポンスが異常（%s）: ステータスコード %d", city, resp.StatusCode)
 			continue
 		}
 
@@ -78,7 +83,7 @@ func weatherHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func docsHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	fmt.Fprint(w, `
 		<h1>Weather API Documentation</h1>
 		<p><strong>エンドポイント:</strong> <code>/weather</code></p>
