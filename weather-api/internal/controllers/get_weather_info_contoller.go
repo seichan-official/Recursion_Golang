@@ -3,40 +3,49 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
-    "weather-api/internal/services"
+	"strings"
+	"weather-api/internal/services"
 )
 
 // GetWeatherInfoController 構造体
 type GetWeatherInfoController struct {
-    GetWeatherInfoService *services.WeatherService 
+	GetWeatherInfoService *services.GetWeatherInfoService
 }
 
 // コンストラクタ
 func NewGetWeatherInfoController() *GetWeatherInfoController {
-    return &GetWeatherInfoController{
-        GetWeatherInfoService: services.NewWeatherService(),
-    }
+
+	return &GetWeatherInfoController{
+		GetWeatherInfoService: services.NewGetWeatherInfoService(),
+	}
 }
 
-// 天気情報を取得するエンドポイント
-func (gc *GetWeatherInfoController) GetWeatherInfo(w http.ResponseWriter, r *http.Request){
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
+// 天気情報取得エンドポイント
+func (gc *GetWeatherInfoController) GetWeatherHandler(w http.ResponseWriter, r *http.Request) {
 	city := r.URL.Query().Get("city")
-	if city == "" {
-		http.Error(w, "City parameter is required", http.StatusBadRequest)
+	cities := r.URL.Query().Get("cities")
+	area := r.URL.Query().Get("area")
+
+	var response interface{}
+	var err error
+
+	if city != "" {
+		response, err = gc.GetWeatherInfoService.GetWeatherForCity(city)
+	} else if cities != "" {
+		citiesList := strings.Split(cities, ",")
+		response, err = gc.GetWeatherInfoService.GetWeatherForCities(citiesList)
+	} else if area != "" {
+		response, err = gc.GetWeatherInfoService.GetWeatherForArea(area)
+	} else {
+		http.Error(w, `{"error": "city, cities, area のいずれかが必要です"}`, http.StatusBadRequest)
 		return
 	}
-
-	weatherInfo, err := gc.GetWeatherInfoService.(city)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		http.Error(w, `{"error": "`+err.Error()+`"}`, http.StatusInternalServerError)
 		return
 	}
 
+	// 正常なレスポンスを JSON 形式で返す
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(weatherInfo)
-}
+	json.NewEncoder(w).Encode(response)
+} 
